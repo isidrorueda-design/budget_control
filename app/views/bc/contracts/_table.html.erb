@@ -1,0 +1,48 @@
+<table class="list">
+  <thead>
+    <tr>      
+      <th>Contratista</th>
+      <th>Partida</th>
+      <th>Inicio</th>
+      <th>Término</th>
+      <th class="number">Contratado ($)</th>
+      <th class="number">Aditivas</th>
+      <th class="number">Deductivas</th>
+      <th class="number">Total</th>
+      <th class="number">Anticipo ($)</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% contracts.each do |contract| %>
+      <tr>        
+        <td><%= contract.contractor&.name %></td>
+        <td><%= contract.number %></td>
+        <td><%= contract.item&.description %></td>
+        <td><%= contract.start_date.present? ? format_date(contract.start_date) : '-' %></td>
+        <td><%= contract.end_date.present? ? format_date(contract.end_date) : '-' %></td>
+        <td class="number"><%= number_to_currency(contract.amount, unit: "", separator: ".", delimiter: ",") %></td>
+        <td class="number"><%= number_to_currency(contract.additives, unit: "", separator: ".", delimiter: ",") %></td>
+        <td class="number"><%= number_to_currency(contract.deductives, unit: "", separator: ".", delimiter: ",") %></td>
+        <td class="number"><strong><%= number_to_currency(contract.total_with_iva, unit: "", separator: ".", delimiter: ",") %></strong></td>
+        <td class="number"><%= number_to_currency(contract.advance, unit: "", separator: ".", delimiter: ",") %></td>
+
+        <td>
+          <%= link_to "Modificar", edit_bc_contract_path(project_id: @project, id: contract), class: "icon icon-edit" %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+  <tfoot>
+    <tr style="font-weight:bold;background:#f5f5f5;">
+      <td colspan="5">SUBTOTALES</td>
+      <td>$<%= number_to_currency(contracts.sum { |c| c.amount || 0 }, unit: "", separator: ".", delimiter: ",") %></td>
+      <td>$<%= number_to_currency(contracts.sum { |c| c.additives || 0 }, unit: "", separator: ".", delimiter: ",") %></td>
+      <td>$<%= number_to_currency(contracts.sum { |c| c.deductives || 0 }, unit: "", separator: ".", delimiter: ",") %></td>
+      <td>$<%= number_to_currency(contracts.sum { |c| c.total_with_iva || 0 }, unit: "", separator: ".", delimiter: ",") %></td>
+      <td>$<%= number_to_currency(contracts.sum { |c| c.advance || 0 }, unit: "", separator: ".", delimiter: ",") %></td>
+      <td></td>
+    </tr>
+  </tfoot>
+</table>        
+ 

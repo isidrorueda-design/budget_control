@@ -1,0 +1,14 @@
+wb = xlsx_package.workbook
+
+wb.add_worksheet(name: "Contratistas") do |sheet|
+  # Estilo para la cabecera
+  header_style = wb.styles.add_style(b: true, bg_color: "DDDDDD")
+
+  # Cabecera
+  sheet.add_row ['Nombre', 'Responsable', 'Teléfono', 'Email'], style: header_style
+
+  # Datos
+  @contractors.each do |contractor|
+    sheet.add_row [contractor.name, contractor.manager, contractor.phone, contractor.email]
+  end
+end

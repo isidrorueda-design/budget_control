@@ -1,0 +1,86 @@
+<%= form_with model: @estimate, url: (@estimate.new_record? ? bc_estimates_path(project_id: @project) : bc_estimate_path(@estimate, project_id: @project)), local: true do |f| %>
+  <div class="box">
+
+    <!-- Contratista -->
+    <p><%= f.label :contractor_id, "Contratista" %>
+       <%= f.collection_select :contractor_id,
+                               @contractor_for_select,
+                               :id,
+                               :name,
+                               { prompt: "Seleccione..." } %></p>
+
+    <!-- Contrato -->
+    <p><%= f.label :contract_id, "Contrato" %>
+       <%= f.collection_select :contract_id,
+                               @contracts_for_select,
+                               :id,
+                               ->(c) { "#{c.number} - #{c.contractor&.name}" },
+                               { prompt: "Seleccione..." } %></p>
+
+    <!-- Número y fecha -->
+    <p><%= f.label :estimate_num, "Número de estimación" %><br>
+       <%= f.text_field :estimate_num, required: true %></p>
+
+    <p><%= f.label :estimate_date, "Fecha de estimación" %><br>
+       <%= f.date_field :estimate_date %></p>
+
+    <!-- Montos -->
+    <p><%= f.label :estimated, "Estimado ($)" %><br>
+       <span>$</span><%= f.number_field :estimated, step: 0.01, required: true, value: 0 %></p>
+
+    <p><%= f.label :amortized, "Amortizado ($)" %><br>
+       <span>$</span><%= f.number_field :amortized, step: 0.01, value: 0.00 %></p>
+
+    <p><%= f.label :warranty_fund, "Fondo de garantía ($)" %><br>
+       <span>$</span><%= f.number_field :warranty_fund, step: 0.01, value: 0.00 %></p>
+
+    <p><%= f.label :retentions, "Retenciones ($)" %><br>
+       <span>$</span><%= f.number_field :retentions, step: 0.01, value: 0.00 %></p>
+
+    <p><%= f.label :deductive, "Deductiva ($)" %><br>
+       <%= f.number_field :deductive, step: 0.01, value: 0 %></p>
+
+    <!-- Botones -->
+    <p><%= f.submit "Guardar", class: "button-positive" %>
+       <%= link_to "Cancelar", bc_estimates_path(project_id: @project), class: "button" %></p>
+  </div>
+<% end %>
+
+<% content_for :header_tags do %>
+  <%= javascript_tag do %>
+    document.addEventListener('DOMContentLoaded', function() {
+      const contractorSelect = document.getElementById('bc_estimate_contractor_id');
+      const contractSelect = document.getElementById('bc_estimate_contract_id');
+      const project_id = <%= @project.id %>;
+
+      if (!contractorSelect) return;
+
+      const filterContracts = (contractorId) => {
+        contractSelect.innerHTML = '<option value=""><%= l(:label_loading) %></option>';
+        contractSelect.disabled = true;
+
+        if (!contractorId) {
+          contractSelect.innerHTML = '<option value=""><%= l(:actionview_helpers_select_prompt) %></option>';
+          return;
+        }
+
+        fetch(`/projects/${project_id}/bc/estimates/contracts.json?contractor_id=${contractorId}`)
+          .then(response => response.json())
+          .then(data => {
+            contractSelect.innerHTML = '<option value=""><%= l(:actionview_helpers_select_prompt) %></option>';
+            data.forEach(contract => {
+              const option = new Option(`${contract.number} - ${contract.contractor_name}`, contract.id);
+              contractSelect.appendChild(option);
+            });
+            contractSelect.disabled = false;
+          })
+          .catch(error => {
+            console.error('Error fetching contracts:', error);
+            contractSelect.innerHTML = '<option value="">Error al cargar</option>';
+          });
+      };
+
+      contractorSelect.addEventListener('change', (event) => filterContracts(event.target.value));
+    });
+  <% end %>
+<% end %>

@@ -1,0 +1,18 @@
+<%= form_with model: @contractor, url: (@contractor.new_record? ? bc_contractors_path(project_id: @project) : bc_contractor_path(@contractor, project_id: @project)), local: true do |f| %>
+  <div class="box">
+    <p><%= f.label :name, "Nombre / Razón social" %><br>
+       <%= f.text_field :name, required: true %></p>
+
+    <p><%= f.label :manager, "Responsable" %><br>
+       <%= f.text_field :manager, required: true %></p>
+
+    <p><%= f.label :phone, "Teléfono" %><br>
+       <%= f.text_field :phone %></p>
+
+    <p><%= f.label :email, "Correo" %><br>
+       <%= f.email_field :email %></p>
+
+    <p><%= f.submit "Guardar", class: "button-positive" %>
+       <%= link_to "Cancelar", bc_contractors_path(project_id: @project), class: "button" %></p>
+  </div>
+<% end %>

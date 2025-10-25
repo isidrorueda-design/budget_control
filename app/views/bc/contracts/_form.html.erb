@@ -1,0 +1,52 @@
+<%= form_with model: @contract, url: (@contract.new_record? ? bc_contracts_path(project_id: @project) : bc_contract_path(@contract, project_id: @project)), local: true do |f| %>
+  <div class="box">
+
+    <!-- Contratista -->
+    <p><%= f.label :contractor_id, "Contratista" %><br>
+       <%= f.collection_select :contractor_id,
+                               @contractors_for_select,
+                               :id, :name,
+                               { prompt: "Seleccione..." },
+                               required: true %></p>
+
+    <!-- Partida -->
+    <p><%= f.label :item_id, "Partida" %><br>
+       <%= f.collection_select :item_id,
+                               @items_for_select,
+                               :id,
+                               ->(i) { "#{i.code} - #{i.description}" },
+                               { prompt: "Seleccione..." },
+                               required: true %></p>
+
+    <!-- Número y fechas -->
+    <p><%= f.label :number, "Número de contrato" %><br>
+       <%= f.text_field :number, required: true %></p>
+
+    <p><%= f.label :start_date, "Fecha de inicio" %><br>
+       <%= f.date_field :start_date %></p>
+
+    <p><%= f.label :end_date, "Fecha de término" %><br>
+       <%= f.date_field :end_date %></p>
+
+    <!-- Montos -->
+    <p><%= f.label :amount, "Monto contratado ($)" %><br>
+       <span>$</span><%= f.number_field :amount, step: 0.01, required: true %></p>
+
+    <p><%= f.label :additives, "Aditivas ($)" %><br>
+       <%= f.number_field :additives, step: 0.01, value: 0 %></p>
+
+    <p><%= f.label :deductives, "Deductivas ($)" %><br>
+       <%= f.number_field :deductives, step: 0.01, value: 0 %></p>
+
+    <p><%= f.label :advance, "Anticipo ($)" %><br>
+       <%= f.number_field :advance, step: 0.01, value: 0 %></p>
+
+    <!-- IVA -->
+    <p><%= f.check_box :apply_iva %>
+       <%= f.label :apply_iva, "Aplicar IVA" %></p>
+
+    <!-- Botones -->
+    <p><%= f.submit "Guardar", class: "button-positive" %>
+       <%= link_to "Cancelar", bc_contracts_path(project_id: @project), class: "button" %></p>
+  </div>
+<% end %>

@@ -1,0 +1,103 @@
+<div class="contextual">
+  <%= link_to 'Nuevo Contrato', new_bc_contract_path(project_id: @project), class: 'icon icon-add' if User.current.allowed_to?(:manage_budget_control, @project) %>
+  <%= link_to 'Importar', '#', class: 'icon icon-upload', onclick: "$('#import-dialog').dialog('open'); return false;" if User.current.allowed_to?(:manage_budget_control, @project) %>
+  <%= link_to 'Exportar', export_bc_contracts_path(project_id: @project, format: :xlsx), class: 'icon icon-download' %>
+</div>
+
+<h2>Contratos</h2>
+
+<%= form_tag(bc_contracts_path(project_id: @project), method: :get, class: 'query-form') do %>
+  <fieldset>
+    <legend><%= l(:label_filter_plural) %></legend>
+    <div class="splitcontent">
+      <div class="splitcontentleft">
+        <p>
+          <%= label_tag 'contractor_id', 'Contratista' %>
+          <%= select_tag 'contractor_id',
+                         options_from_collection_for_select(@contractors_for_select, :id, :name, params[:contractor_id]),
+                         prompt: 'Todos',
+                         onchange: "this.form.submit();" %>
+        </p>
+      </div>
+      <div class="splitcontentright">
+        <p>
+          <%= label_tag 'contract_id', 'Contrato' %>
+          <%= select_tag 'contract_id',
+                         options_from_collection_for_select(@contracts_for_select, :id, :number, params[:contract_id]),
+                         prompt: 'Todos' %>
+        </p>
+      </div>
+    </div>
+    <p class="buttons">
+      <%= link_to l(:button_apply), '#', onclick: '$(this).closest("form").submit()', class: 'icon icon-checked' %>
+      <%= link_to l(:button_clear), bc_contracts_path(project_id: @project), class: 'icon icon-reload' %>
+    </p>
+  </fieldset>
+<% end %>
+
+<div class="autoscroll">
+  <table class="list">
+    <thead>
+      <tr>
+        <th style="text-align: left;">Contratista</th>        
+        <th style="text-align: left;">Número</th>
+        <th style="text-align: left;">Partida</th>
+        <th style="text-align: left;">Monto</th>
+        <th style="text-align: left;">Aditiva</th>
+        <th style="text-align: left;">Deductiva</th>
+        <th style="text-align: left;">Total Contrato</th>
+        <th style="text-align: left;">IVA</th>
+        <th style="text-align: left;">Total con IVA</th>
+        <th style="text-align: left;">Anticipo</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @contracts.each do |contract| %>
+        <tr class="entry <%= cycle('odd', 'even') %>">
+          <td style="text-align: left;"><%= contract.contractor.name %></td>
+          <td style="text-align: left;"><%= contract.number %></td>
+          <td style="text-align: left;"><%= contract.item.description %></td>
+          <td style="text-align: left;"><%= number_to_currency(contract.amount, unit: '$') %></td>
+          <td style="text-align: left;">$<%= number_to_currency(contract.additives, unit: "", separator: ".", delimiter: ",") %></td>
+          <td style="text-align: left;">$<%= number_to_currency(contract.deductives, unit: "", separator: ".", delimiter: ",") %></td>         
+          <td style="text-align: left;">$<%= number_to_currency(contract.total_amount, unit: "", separator: ".", delimiter: ",") %></td>
+          <td style="text-align: left;">$<%= number_to_currency(contract.iva, unit: "", separator: ".", delimiter: ",") %></td>
+          <td style="text-align: left;">$<%= number_to_currency(contract.total_with_iva, unit: "", separator: ".", delimiter: ",") %></td>
+          <td style="text-align: left;">$<%= number_to_currency(contract.advance, unit: "", separator: ".", delimiter: ",") %></td>
+          <td class="buttons">
+            <%= link_to 'Editar', edit_bc_contract_path(contract, project_id: @project), class: 'icon icon-edit' if User.current.allowed_to?(:manage_budget_control, @project) %>
+            <%= link_to 'Eliminar', bc_contract_path(contract, project_id: @project), method: :delete, data: { confirm: '¿Estás seguro?' }, class: 'icon icon-del' if User.current.allowed_to?(:manage_budget_control, @project) %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+    <tfoot>
+      <tr class="total">
+        <td colspan="3" style="text-align: right; font-weight: bold;">Totales:</td>
+        <td style="text-align: left; font-weight: bold;">$<%= number_to_currency(@totals[:amount], unit: "", separator: ".", delimiter: ",") %></td>
+        <td style="text-align: left; font-weight: bold;">$<%= number_to_currency(@totals[:additives], unit: "", separator: ".", delimiter: ",") %></td>
+        <td style="text-align: left; font-weight: bold;">$<%= number_to_currency(@totals[:deductives], unit: "", separator: ".", delimiter: ",") %></td>
+        <td style="text-align: left; font-weight: bold;">$<%= number_to_currency(@totals[:total_amount], unit: "", separator: ".", delimiter: ",") %></td>
+        <td style="text-align: left; font-weight: bold;">$<%= number_to_currency(@totals[:iva], unit: "", separator: ".", delimiter: ",") %></td>
+        <td style="text-align: left; font-weight: bold;">$<%= number_to_currency(@totals[:total_with_iva], unit: "", separator: ".", delimiter: ",") %></td>
+        <td style="text-align: left; font-weight: bold;">$<%= number_to_currency(@totals[:advance], unit: "", separator: ".", delimiter: ",") %></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<% if User.current.allowed_to?(:manage_budget_control, @project) %>
+<div id="import-dialog" title="Importar Contratos" style="display:none;">
+  <%= form_tag(import_bc_contracts_path(project_id: @project), multipart: true) do %>
+    <p>
+      <%= label_tag 'file', 'Selecciona un archivo XLSX' %><br>
+      <%= file_field_tag 'file', accept: '.xlsx' %>
+    </p>
+    <p>El archivo debe contener las columnas: <strong>Número, Contratista, Partida, Monto</strong>.</p>
+    <%= submit_tag 'Importar', class: 'button-positive' %>
+  <% end %>
+</div>
+<script>$(function() { $("#import-dialog").dialog({ autoOpen: false, modal: true, width: 500 }); });</script>
+<% end %>

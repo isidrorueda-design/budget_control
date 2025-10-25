@@ -1,0 +1,47 @@
+<table class="list">
+  <thead>
+    <tr>
+      <th>Contrato</th>
+      <th>Contratista</th>
+      <th># Estimación</th>
+      <th>Fecha</th>
+      <th class="number">Monto Estimado</th>
+      <th class="number">Amortizado</th>
+      <th class="number">Fondo Garantía</th>
+      <th class="number">Retenciones</th>
+      <th class="number">Deductivas</th>
+      <th class="number">Total Estimado</th>
+      <th class="number">IVA</th>
+      <th class="number">Total c/IVA</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% estimates.each do |estimate| %>
+      <tr>
+        <td>
+          <% if estimate.contract %>
+            <%= link_to estimate.contract.number, edit_bc_contract_path(project_id: @project, id: estimate.contract) %>
+          <% else %>
+            <span class="missing-data">Contrato no encontrado</span>
+          <% end %>
+        </td>
+        <td><%= estimate.contractor&.name %></td>
+        <td class="center"><%= estimate.estimate_num %></td>
+        <td><%= format_date(estimate.estimate_date) if estimate.estimate_date %></td>
+        <td class="number"><%= number_to_currency(estimate.estimated) %></td>
+        <td class="number"><%= number_to_currency(estimate.amortized) %></td>
+        <td class="number"><%= number_to_currency(estimate.warranty_fund) %></td>
+        <td class="number"><%= number_to_currency(estimate.retentions) %></td>
+        <td class="number"><%= number_to_currency(estimate.deductive) %></td>
+        <td class="number"><strong><%= number_to_currency(estimate.total_estimated) %></strong></td>
+        <td class="number"><%= number_to_currency(estimate.iva) %></td>
+        <td class="number"><strong><%= number_to_currency(estimate.total) %></strong></td>
+        <td class="actions">
+          <%= link_to 'Editar', edit_bc_estimate_path(project_id: @project, id: estimate), class: 'icon icon-edit' %>
+          <%= link_to 'Eliminar', bc_estimate_path(project_id: @project, id: estimate), method: :delete, data: { confirm: '¿Estás seguro?' }, class: 'icon icon-del' %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

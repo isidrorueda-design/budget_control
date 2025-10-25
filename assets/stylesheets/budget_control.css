@@ -1,0 +1,4 @@
+.budget-info.box { border: 1px solid #ddd; padding: 1rem; border-radius: 4px; margin-bottom: 1rem; }
+.budget-actions { margin-top: 1rem; }
+.drop-zone { border: 2px dashed #ccc; border-radius: 6px; padding: 2rem; text-align: center; cursor: pointer; }
+.drop-zone:hover { background: #f9f9f9; }

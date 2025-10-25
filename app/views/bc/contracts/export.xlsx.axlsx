@@ -1,0 +1,42 @@
+# frozen_string_literal: true
+
+# Crea un nuevo paquete de Excel
+xlsx_package = Axlsx::Package.new
+workbook = xlsx_package.workbook
+
+# Define estilos para el encabezado y las celdas
+header_style = workbook.styles.add_style(b: true, bg_color: '004586', fg_color: 'FFFFFFFF')
+currency_style = workbook.styles.add_style(format_code: '$#,##0.00')
+
+# Crea una nueva hoja de cálculo
+workbook.add_worksheet(name: 'Contratos') do |sheet|
+  # Fila de encabezado
+  header = ['Número', 'Contratista', 'Partida', 'Monto', 'Aditivas', 'Deductivas', 'Anticipo', 'Total', 'Aplica IVA', 'Inicio', 'Fin']
+  sheet.add_row header, style: header_style
+
+  # Itera sobre los contratos para agregar las filas de datos
+  @contracts.each do |contract|
+    sheet.add_row [
+      contract.number,
+      contract.contractor.name,
+      contract.item.code,
+      contract.amount,
+      contract.additives,
+      contract.deductives,
+      contract.advance,
+      contract.total_with_iva, # Usamos el método del modelo para el total con IVA
+      contract.apply_iva ? 'Sí' : 'No',
+      contract.start_date,
+      contract.end_date
+    ], types: [:string, :string, :string, :float, :float, :float, :float, :float, :string, :date, :date]
+
+    # Aplica el estilo de moneda a las celdas correspondientes de la fila recién agregada
+    sheet.rows.last.cells[3..7].each { |c| c.style = currency_style }
+  end
+
+  # Ajusta el ancho de las columnas para que se ajusten al contenido
+  sheet.column_widths nil, 25, 15, 15, 15, 15, 15, 15, 10, 12, 12
+end
+
+# Envía el paquete de Excel como un string
+xlsx_package.to_stream.read

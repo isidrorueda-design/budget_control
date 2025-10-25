@@ -1,0 +1,56 @@
+<% content_for :header_tags do %>
+  <style>
+    .budget-dashboard {
+      display: flex;
+      gap: 1.2rem;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+    }
+    .budget-card {
+      flex: 1 1 220px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 1.2rem;
+      background: #fafafa;
+      transition: background 0.2s;
+    }
+    .budget-card:hover {
+      background: #f0f0f0;
+    }
+    .budget-card h2 {
+      margin: 0 0 0.5rem 0;
+      font-size: 1.1rem;
+    }
+    .budget-card p {
+      margin: 0;
+      color: #555;
+      font-size: 0.9rem;
+    }
+  </style>
+<% end %>
+
+<h1>Control de Presupuesto</h1>
+
+<div class="budget-dashboard">
+  <div class="budget-card">
+    <h2><%= link_to 'Contratos', bc_contracts_path(project_id: @project) %></h2>
+    <p>Gestionar contratos y montos.</p>
+  </div>
+
+  <div class="budget-card">
+    <h2><%= link_to 'Contratistas', bc_contractors_path(project_id: @project) %></h2>
+    <p>Directorio de contratistas.</p>
+  </div>
+
+  <div class="budget-card">
+    <h2><%= link_to 'Partidas', bc_items_path(project_id: @project) %></h2>
+    <p>Catálogo de partidas.</p>
+  </div>
+
+  <div class="budget-card">
+    <h2><%= link_to 'Estimaciones', bc_estimates_path(project_id: @project) %></h2>
+    <p>Control de estimaciones.</p>
+  </div>
+</div>
+
+<h2>Catálogos</h2>

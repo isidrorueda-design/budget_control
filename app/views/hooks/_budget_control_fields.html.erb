@@ -1,0 +1,14 @@
+<% project = @issue.project || @project %>
+<% if project && project.bc_estimates.exists? %>
+  <p>
+    <%= f.label :bc_estimate_id, 'Estimación' %>
+    <%= f.select :bc_estimate_id,
+                 options_from_collection_for_select(
+                   project.bc_estimates.joins(:contract).order('bc_contracts.number ASC, bc_estimates.estimate_num ASC'),
+                   :id,
+                   ->(e) { "#{e.contract.number} - Est #{e.estimate_num}" },
+                   @issue.bc_estimate_id
+                 ),
+                 { include_blank: true } %>
+  </p>
+<% end %>

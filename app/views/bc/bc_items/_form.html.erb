@@ -1,0 +1,16 @@
+<%= form_with model: @item, url: (@item.new_record? ? bc_items_path(project_id: @project) : bc_item_path(@item, project_id: @project)), local: true do |f| %>
+  <% if @item.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@item.errors.count, "error") %> impidieron guardar esta partida:</h2>
+      <ul>
+        <% @item.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <p><%= f.label :code, 'Código' %><br><%= f.text_field :code, required: true %></p>
+  <p><%= f.label :description, 'Descripción' %><br><%= f.text_area :description, rows: 5 %></p>
+  <p><%= f.submit 'Guardar' %></p>
+<% end %>

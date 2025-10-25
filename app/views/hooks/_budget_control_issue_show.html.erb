@@ -1,0 +1,22 @@
+<%# Solo mostramos si el issue tiene estimación %>
+<% estimate = issue.bc_estimate %>
+<% if estimate %>
+  <div class="budget-info box">
+    <h3>Información de Presupuesto</h3>
+    <table class="attributes">
+      <tr>
+        <th class="name">Estimación:</th>
+        <td class="value">
+          <%= link_to "#{estimate.contract.number} - Est #{estimate.estimate_num}",
+                      project_bc_estimate_path(issue.project, estimate) %>
+        </td>
+      </tr>
+      <tr>
+        <th class="name">Costo de la tarea:</th>
+        <td class="value">
+          <%= number_to_currency(issue.bc_task_cost || 0, unit: "$") %>
+        </td>
+      </tr>
+    </table>
+  </div>
+<% end %>

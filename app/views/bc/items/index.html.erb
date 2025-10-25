@@ -1,0 +1,24 @@
+<h2>Partidas</h2>
+
+<%= link_to "Nueva partida", new_bc_item_path(project_id: @project), class: "icon icon-add button-positive" %>
+
+<table class="list">
+  <thead>
+    <tr>
+      <th>Código</th>
+      <th>Descripción</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @items.each do |item| %>
+      <tr>
+        <td><%= item.code %></td>
+        <td><%= item.description %></td>
+        <td>
+          <%= link_to "Editar", edit_bc_item_path(project_id: @project, id: item), class: "icon icon-edit" %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

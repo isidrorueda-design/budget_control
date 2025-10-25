@@ -1,0 +1,1 @@
+echo "# Budget Control plugin for Redmine"
