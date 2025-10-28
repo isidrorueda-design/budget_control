@@ -1,0 +1,29 @@
+<%= form_for @base_budget, url: @base_budget.new_record? ? bc_base_budgets_path(project_id: @project) : bc_base_budget_path(@project, @base_budget) do |f| %>
+  <%= error_messages_for @base_budget %>
+
+  <div class="box tabular">
+    <p>
+      <%= f.label :bc_item_id, 'Partida' %>
+      <%= f.select :bc_item_id, options_from_collection_for_select(@items_for_select, :id, :code_and_description, @base_budget.bc_item_id), { include_blank: true }, { required: true, class: 'select2' } %>
+    </p>
+    <p>
+      <%= f.label :budget_amount, 'Monto del Presupuesto Base' %>
+      <%= f.text_field :budget_amount, required: true, type: 'number', step: '0.01' %>
+    </p>
+  </div>
+
+  <%= f.submit @base_budget.new_record? ? 'Crear' : 'Actualizar', class: 'button' %>
+  <%= link_to 'Cancelar', bc_base_budgets_path(project_id: @project), class: 'button' %>
+<% end %>
+
+<% content_for :header_tags do %>
+  <%= javascript_include_tag 'select2.min.js', plugin: 'budget_control' %>
+  <%= stylesheet_link_tag 'select2.min.css', plugin: 'budget_control' %>
+  <script type="text/javascript">
+    $(document).ready(function() {
+      $('.select2').select2({
+        width: 'resolve'
+      });
+    });
+  </script>
+<% end %>

@@ -17,6 +17,7 @@ RedmineApp::Application.routes.draw do
       resources :estimates do
         collection { post :import; get :export; get :contracts }
       end
+      resources :base_budgets
     end
   end
 end

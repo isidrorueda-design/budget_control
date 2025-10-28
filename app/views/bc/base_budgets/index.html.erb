@@ -1,0 +1,67 @@
+<h2>Presupuesto Base por Partida</h2>
+
+<%= link_to 'Nuevo Presupuesto Base', new_bc_base_budget_path(project_id: @project), class: 'icon icon-add' %>
+
+<% if @budget_data.any? %>
+  <table class="list">
+    <thead>
+      <tr>
+        <th>Partida</th>
+        <th>Descripción</th>
+        <th>Presupuesto Base</th>
+        <th>Total Contratado (con IVA)</th>
+        <th>Diferencia</th>
+        <th>% Diferencia</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @budget_data.each do |data| %>
+        <tr>
+          <td><%= data[:item].code %></td>
+          <td><%= data[:item].description %></td>
+          <td>$<%= number_to_currency(data[:base_budget], unit:  "", separator: ".", delimiter: ",") %></td>
+          <td>$<%= number_to_currency(data[:contracts_total], unit:  "", separator: ".", delimiter: ",") %></td>
+          <td class="<%= 'negative' if data[:difference] < 0 %>">$
+            <%= number_to_currency(data[:difference], unit:  "", separator: ".", delimiter: ",") %></td>
+          </td>
+          <td class="<%= 'negative' if data[:percentage_difference] && data[:percentage_difference] < 0 %>">
+            <% if data[:percentage_difference].present? %>
+              <%= number_to_percentage(data[:percentage_difference], precision: 2) %>
+            <% else %>
+              N/A
+            <% end %>
+          </td>
+          <td>
+            <% if data[:item].bc_base_budget.present? %>
+              <%= link_to 'Editar', edit_bc_base_budget_path(@project, data[:item].bc_base_budget), class: 'icon icon-edit' %>
+          
+            <% else %>
+              <%= link_to 'Asignar', new_bc_base_budget_path(project_id: @project, bc_item_id: data[:item].id), class: 'icon icon-add' %>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+    <tfoot>
+      <tr class="total">
+        <td colspan="2" style="text-align: right; font-weight: bold;">Totales:</td>
+        <td style="font-weight: bold;">$<%= number_to_currency(@totals[:base_budget], unit:  "", separator: ".", delimiter: ",") %></td>
+        <td style="font-weight: bold;">$<%= number_to_currency(@totals[:contracts_total], unit:  "", separator: ".", delimiter: ",") %></td>
+        <td class="<%= 'negative' if @totals[:difference] < 0 %>" style="font-weight: bold;">$
+          <%= number_to_currency(@totals[:difference], unit:  "", separator: ".", delimiter: ",") %>
+        </td>
+        <td class="<%= 'negative' if @totals[:percentage_difference] && @totals[:percentage_difference] < 0 %>" style="font-weight: bold;">
+          <% if @totals[:percentage_difference].present? %>
+            <%= number_to_percentage(@totals[:percentage_difference], precision: 2) %>
+          <% else %>
+            N/A
+          <% end %>
+        </td>
+        <td></td>
+      </tr>
+    </tfoot>
+  </table>
+<% else %>
+  <p class="nodata">No hay partidas configuradas para este proyecto.</p>
+<% end %>

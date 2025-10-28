@@ -15,6 +15,7 @@ module BudgetControl
           has_many :bc_contractors, class_name: 'BcContractor', dependent: :destroy
           has_many :bc_contracts,   class_name: 'BcContract',   dependent: :destroy
           has_many :bc_estimates,   class_name: 'BcEstimate',   dependent: :destroy
+          has_many :bc_base_budgets, class_name: 'BcBaseBudget', dependent: :destroy
         end
       end
     end
