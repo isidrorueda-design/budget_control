@@ -1,0 +1,8 @@
+<h2>Catálogos</h2>
+
+<div class="box">
+  <ul>
+    <li><%= link_to "Partidas", bc_items_path(project_id: @project), class: "icon icon-invoice" %></li>
+    <li><%= link_to "Contratistas", bc_contractors_path(project_id: @project), class: "icon icon-user" %></li>
+  </ul>
+</div>

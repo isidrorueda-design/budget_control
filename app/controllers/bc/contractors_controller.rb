@@ -4,7 +4,10 @@ module Bc
     before_action :set_contractor, only: %i[edit update destroy]
 
     def index
-      @contractors = scoped_relation(BcContractor).order(:name)
+      @search = params[:search]
+      @contractors = scoped_relation(BcContractor)
+      @contractors = @contractors.where("name LIKE ?", "%#{@search}%") if @search.present?
+      @contractors = @contractors.order(:name).page(params[:page]).per(25)
     end
 
     def new

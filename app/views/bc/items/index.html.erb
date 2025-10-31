@@ -1,24 +1,49 @@
+<div class="contextual">
+  <%= link_to 'Nueva Partida', new_bc_item_path(project_id: @project), class: 'icon icon-add' if User.current.allowed_to?(:manage_budget_control, @project) %>
+</div>
+
 <h2>Partidas</h2>
 
-<%= link_to "Nueva partida", new_bc_item_path(project_id: @project), class: "icon icon-add button-positive" %>
+<%= form_tag bc_items_path(project_id: @project), method: :get, class: 'search-form' do %>
+  <p>
+    <%= text_field_tag :search, @search, placeholder: 'Buscar por código o descripción...' %>
+    <%= submit_tag 'Buscar', name: nil %>
+  </p>
+<% end %>
 
-<table class="list">
-  <thead>
-    <tr>
-      <th>Código</th>
-      <th>Descripción</th>
-      <th>Acciones</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% @items.each do |item| %>
-      <tr>
-        <td><%= item.code %></td>
-        <td><%= item.description %></td>
-        <td>
-          <%= link_to "Editar", edit_bc_item_path(project_id: @project, id: item), class: "icon icon-edit" %>
-        </td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
+<% if @items.any? %>
+  <div class="autoscroll">
+    <table class="list">
+      <thead>
+        <tr>
+          <th style="text-align: left;">Código</th>
+          <th style="text-align: left;">Descripción</th>
+          <th style="text-align: left;">Unidad</th>
+          <th style="text-align: right;">Precio Unitario</th>
+          <th style="text-align: right;">Cantidad</th>
+          <th style="text-align: right;">Total</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @items.each do |item| %>
+          <tr class="entry <%= cycle('odd', 'even') %>">
+            <td style="text-align: left;"><%= item.code %></td>
+            <td style="text-align: left;"><%= item.description %></td>
+            <td style="text-align: left;"><%= item.unit %></td>
+            <td style="text-align: right;"><%= number_to_currency(item.unit_price) %></td>
+            <td style="text-align: right;"><%= number_with_delimiter(item.quantity) %></td>
+            <td style="text-align: right;"><%= number_to_currency(item.total) %></td>
+            <td class="buttons">
+              <%= link_to 'Editar', edit_bc_item_path(item, project_id: @project), class: 'icon icon-edit' if User.current.allowed_to?(:manage_budget_control, @project) %>
+              <%= link_to 'Eliminar', bc_item_path(item, project_id: @project), method: :delete, data: { confirm: '¿Estás seguro?' }, class: 'icon icon-del' if User.current.allowed_to?(:manage_budget_control, @project) %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  <%= will_paginate @items %>
+<% else %>
+  <p>No se encontraron partidas.</p>
+<% end %>

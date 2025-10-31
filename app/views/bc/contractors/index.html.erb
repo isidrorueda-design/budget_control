@@ -6,33 +6,45 @@
 
 <h2>Contratistas</h2>
 
-<div class="autoscroll">
-  <table class="list">
-    <thead>
-      <tr>
-        <th style="text-align: left;">Nombre</th>
-        <th style="text-align: left;">Responsable</th>
-        <th style="text-align: left;">Teléfono</th>
-        <th style="text-align: left;">Email</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @contractors.each do |contractor| %>
-        <tr class="entry <%= cycle('odd', 'even') %>">
-          <td style="text-align: left;"><%= contractor.name %></td>
-          <td style="text-align: left;"><%= contractor.manager %></td>
-          <td style="text-align: left;"><%= contractor.phone %></td>
-          <td style="text-align: left;"><%= contractor.email %></td>
-          <td class="buttons">
-            <%= link_to 'Editar', edit_bc_contractor_path(contractor, project_id: @project), class: 'icon icon-edit' if User.current.allowed_to?(:manage_budget_control, @project) %>
-            <%= link_to 'Eliminar', bc_contractor_path(contractor, project_id: @project), method: :delete, data: { confirm: '¿Estás seguro?' }, class: 'icon icon-del' if User.current.allowed_to?(:manage_budget_control, @project) %>
-          </td>
+<%= form_tag bc_contractors_path(project_id: @project), method: :get, class: 'search-form' do %>
+  <p>
+    <%= text_field_tag :search, @search, placeholder: 'Buscar por nombre...' %>
+    <%= submit_tag 'Buscar', name: nil %>
+  </p>
+<% end %>
+
+<% if @contractors.any? %>
+  <div class="autoscroll">
+    <table class="list">
+      <thead>
+        <tr>
+          <th style="text-align: left;">Nombre</th>
+          <th style="text-align: left;">Responsable</th>
+          <th style="text-align: left;">Teléfono</th>
+          <th style="text-align: left;">Email</th>
+          <th></th>
         </tr>
-      <% end %>
-    </tbody>
-  </table>
-</div>
+      </thead>
+      <tbody>
+        <% @contractors.each do |contractor| %>
+          <tr class="entry <%= cycle('odd', 'even') %>">
+            <td style="text-align: left;"><%= contractor.name %></td>
+            <td style="text-align: left;"><%= contractor.manager %></td>
+            <td style="text-align: left;"><%= contractor.phone %></td>
+            <td style="text-align: left;"><%= contractor.email %></td>
+            <td class="buttons">
+              <%= link_to 'Editar', edit_bc_contractor_path(contractor, project_id: @project), class: 'icon icon-edit' if User.current.allowed_to?(:manage_budget_control, @project) %>
+              <%= link_to 'Eliminar', bc_contractor_path(contractor, project_id: @project), method: :delete, data: { confirm: '¿Estás seguro?' }, class: 'icon icon-del' if User.current.allowed_to?(:manage_budget_control, @project) %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  <%= will_paginate @contractors %>
+<% else %>
+  <p>No se encontraron contratistas.</p>
+<% end %>
 
 <% if User.current.allowed_to?(:manage_budget_control, @project) %>
 <div id="import-dialog" title="Importar Contratistas" style="display:none;">

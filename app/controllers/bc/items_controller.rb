@@ -5,7 +5,10 @@ module Bc
     before_action :set_item, only: %i[edit update destroy]
 
     def index
-      @items = scoped_relation(BcItem).order(:code)
+      @search = params[:search]
+      @items = scoped_relation(BcItem)
+      @items = @items.where("code LIKE ? OR description LIKE ?", "%#{@search}%", "%#{@search}%") if @search.present?
+      @items = @items.order(:code).page(params[:page]).per(25)
     end
 
     def new
@@ -47,7 +50,7 @@ module Bc
     private
 
     def item_params
-      params.require(:bc_item).permit(:code, :description)
+      params.require(:bc_item).permit(:code, :description, :unit, :unit_price, :quantity)
     end
 
     def set_item

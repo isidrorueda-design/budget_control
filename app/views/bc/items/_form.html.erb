@@ -6,6 +6,21 @@
     <p><%= f.label :description, "Partida" %><br>
        <%= f.text_area :description, rows: 3 %></p>
 
+    <div style="display: flex; gap: 1rem;">
+      <p style="flex: 1;">
+        <%= f.label :unit, "Unidad" %><br>
+        <%= f.text_field :unit, required: true %>
+      </p>
+      <p style="flex: 1;">
+        <%= f.label :unit_price, "Precio Unitario" %><br>
+        <%= f.number_field :unit_price, required: true, step: 0.01 %>
+      </p>
+      <p style="flex: 1;">
+        <%= f.label :quantity, "Cantidad" %><br>
+        <%= f.number_field :quantity, required: true, step: 0.01 %>
+      </p>
+    </div>
+
     <p><%= f.submit "Guardar", class: "button-positive" %>
        <%= link_to "Cancelar", bc_items_path(project_id: @project), class: "button" %></p>
   </div>

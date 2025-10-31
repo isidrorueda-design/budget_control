@@ -9,7 +9,7 @@ Redmine::Plugin.register :budget_control do
 
   project_module :budget_control do
     permission :view_budget_control,
-               { 'bc/budget_control': [:index],
+               { 'bc/bc_main':      [:index, :catalogs],
                  'bc/contractors':    [:index],
                  'bc/contracts':      [:index],
                  'bc/items':          [:index],
@@ -24,10 +24,17 @@ Redmine::Plugin.register :budget_control do
   end
 
   menu :project_menu, :budget_control,
-       { controller: 'bc/budget_control', action: 'index' },
+       { controller: 'bc/bc_main', action: 'index' },
        caption:  'Presupuestos',
        param:    :project_id,
        after:    :activity,
+       if:       ->(p) { User.current.allowed_to?(:view_budget_control, p) }
+
+  menu :project_menu, :bc_catalogs,
+       { controller: 'bc/bc_main', action: 'catalogs' },
+       caption:  'Catálogos',
+       param:    :project_id,
+       after:    :budget_control,
        if:       ->(p) { User.current.allowed_to?(:view_budget_control, p) }
 end
 
